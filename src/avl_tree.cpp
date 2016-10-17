@@ -293,16 +293,20 @@ template<typename K, typename V> class avl_tree {
         // ===========================================================
     public:
         void erase(K k) {
+            if (print_enabled) cout << "Deleting " << k << "\n";
             root = erase(root, k);
             mSize--;
+            if (print_enabled) this->print();
         }
         void erase(avl_tree_iterator p) {
+            if (print_enabled) cout << "Deleting " << p.node->entry->key << "\n";
             if (p == end()) {
                 cout << "No such Node.\n";
                 throw;
             }
             erase(p.node->entry->key);
             mSize--;
+            if (print_enabled) this->print();
         }
     private:
         avl_tree_node* erase(avl_tree_node* node, K k) {
@@ -320,7 +324,7 @@ template<typename K, typename V> class avl_tree {
                     avl_tree_node* node2 = node;
                     avl_tree_node* child = node->left_child ? node->left_child : node->right_child;
                     *node = *child;
-                    delete node2;
+                    delete child;
                 } else {
                     avl_tree_node* min_right = node->right_child;
                     while (min_right->left_child)
@@ -329,7 +333,40 @@ template<typename K, typename V> class avl_tree {
                     erase(node->right_child, min_right->entry->key);
                 }
             }
-            //TODO Balancing
+            if (print_enabled) this->print();
+            if (!node) return NULL;
+            node->update_height();
+            // ===========================================================
+            // Balancing
+            // ===========================================================
+            int delta_height = height(node->left_child) - height(node->right_child);
+            if (delta_height > 1) {
+                if (node->left_child->left_child->height >= node->left_child->right_child->height) {
+                    if (print_enabled) cout << "Rotating right at " << node->entry->key << "\n";
+                    return rotate_right(node);
+                } else {
+                    if (print_enabled) cout << "Rotating left at " << node->left_child->entry->key
+                            << "\n";
+                    node->left_child = rotate_left(node->left_child);
+                    if (print_enabled) cout << "Rotating right at " << node->entry->key << "\n";
+                    return rotate_right(node);
+                }
+            } else if (delta_height < -1) {
+                if (node->right_child->left_child->height
+                        <= node->right_child->right_child->height) {
+                    if (print_enabled) cout << "Rotating right at " << node->right_child->entry->key
+                            << "\n";
+                    node->right_child = rotate_right(node->right_child);
+                    if (print_enabled) cout << "Rotating left at " << node->entry->key << "\n";
+                    return rotate_left(node);
+                } else {
+                    if (print_enabled) cout << "Rotating left at " << node->entry->key << "\n";
+                    return rotate_left(node);
+                }
+            } else /*-1<=delta_height<=1*/{
+                if (print_enabled) cout << "No Rotations at " << node->entry->key << "\n";
+                return node;
+            }
             return node;
         }
         // ===========================================================

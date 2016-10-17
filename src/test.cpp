@@ -22,6 +22,7 @@ bool is_pair_with_sum(avl_tree<int, int>& tree, int sum) {
 }
 int main() {
     avl_tree<int, int> tree;
+    tree.enable_printing();
     ifstream ifs;
     ifs.open("input.txt");
     if (ifs.is_open()) {
@@ -33,6 +34,5 @@ int main() {
         cout << "Could not open file 'input.txt'.\n";
         return 0;
     }
-    for (int i = -10; i < 200; i++)
-        cout << i << "->" << (is_pair_with_sum(tree, i) ? "YES" : "NO") << "\n";
+    cout << 10 << "->" << (is_pair_with_sum(tree, 10) ? "YES" : "NO") << "\n";
 }
