@@ -1,8 +1,6 @@
 #ifndef SRC_AVL_TREE_CPP_
 #define SRC_AVL_TREE_CPP_
 
-#include <cstdlib>
-#include <utility>
 #include <iostream>
 
 using namespace std;
@@ -27,8 +25,8 @@ template<typename K, typename V> class avl_tree {
                 avl_tree_node* left_child;
                 avl_tree_node* right_child;
                 int height;
-                avl_tree_node(avl_tree_entry* entry, int height)
-                        : entry(entry), left_child(NULL), right_child(NULL), height(height) {
+                avl_tree_node(avl_tree_entry* entry)
+                        : entry(entry), left_child(NULL), right_child(NULL), height(0) {
                 }
                 avl_tree_node()
                         : entry(NULL), left_child(NULL), right_child(NULL), height(0) {
@@ -70,7 +68,6 @@ template<typename K, typename V> class avl_tree {
         unsigned mSize;
         avl_tree_node* end_node;
         avl_tree_iterator* end_iterator;
-        bool print_enabled;
         // ===========================================================
         // Constructor & Destructor
         // ===========================================================
@@ -80,16 +77,9 @@ template<typename K, typename V> class avl_tree {
             mSize = 0;
             end_node = new avl_tree_node();
             end_iterator = new avl_tree_iterator(end_node);
-            print_enabled = false;
         }
         virtual ~avl_tree() {
             delete_node(root);
-        }
-        void enable_printing() {
-            print_enabled = true;
-        }
-        void disable_printing() {
-            print_enabled = false;
         }
     private:
         void delete_node(avl_tree_node* node) {
@@ -194,10 +184,10 @@ template<typename K, typename V> class avl_tree {
         // ===========================================================
     public:
         void put(K k, V v) {
-            if (print_enabled) cout << "Inserting " << k << "\n";
+            cout << "Inserting " << k << "\n";
             avl_tree_entry* entry = new avl_tree_entry(k, v);
             root = insert(root, entry);
-            if (print_enabled) this->print();
+            this->print();
         }
         // ===========================================================
         // Put/Insert Internal Functions
@@ -226,7 +216,7 @@ template<typename K, typename V> class avl_tree {
         avl_tree_node* insert(avl_tree_node* node, avl_tree_entry* entry) {
             if (node == NULL) {
                 mSize++;
-                return new avl_tree_node(entry, 0);
+                return new avl_tree_node(entry);
             } else {
                 // ===========================================================
                 // Insertion
@@ -237,9 +227,9 @@ template<typename K, typename V> class avl_tree {
                         node->right_child, entry);
                 else /*entry->key == node->entry->key*/node->entry->val = entry->val;
                 node->update_height();
-                if (print_enabled) this->print();
+                this->print();
                 if (entry->key == node->entry->key) {
-                    if (print_enabled) cout << "Updated\n";
+                    cout << "Updated\n";
                     return node;
                 }
                 // ===========================================================
@@ -248,28 +238,26 @@ template<typename K, typename V> class avl_tree {
                 int delta_height = height(node->left_child) - height(node->right_child);
                 if (delta_height > 1) {
                     if (entry->key < node->left_child->entry->key) {
-                        if (print_enabled) cout << "Rotating right at " << node->entry->key << "\n";
+                        cout << "Rotating right at " << node->entry->key << "\n";
                         return rotate_right(node);
                     } else {
-                        if (print_enabled) cout << "Rotating left at "
-                                << node->left_child->entry->key << "\n";
+                        cout << "Rotating left at " << node->left_child->entry->key << "\n";
                         node->left_child = rotate_left(node->left_child);
-                        if (print_enabled) cout << "Rotating right at " << node->entry->key << "\n";
+                        cout << "Rotating right at " << node->entry->key << "\n";
                         return rotate_right(node);
                     }
                 } else if (delta_height < -1) {
                     if (entry->key < node->right_child->entry->key) {
-                        if (print_enabled) cout << "Rotating right at "
-                                << node->right_child->entry->key << "\n";
+                        cout << "Rotating right at " << node->right_child->entry->key << "\n";
                         node->right_child = rotate_right(node->right_child);
-                        if (print_enabled) cout << "Rotating left at " << node->entry->key << "\n";
+                        cout << "Rotating left at " << node->entry->key << "\n";
                         return rotate_left(node);
                     } else {
-                        if (print_enabled) cout << "Rotating left at " << node->entry->key << "\n";
+                        cout << "Rotating left at " << node->entry->key << "\n";
                         return rotate_left(node);
                     }
                 } else /*-1<=delta_height<=1*/{
-                    if (print_enabled) cout << "No Rotations at " << node->entry->key << "\n";
+                    cout << "No Rotations at " << node->entry->key << "\n";
                     return node;
                 }
             }
@@ -293,20 +281,20 @@ template<typename K, typename V> class avl_tree {
         // ===========================================================
     public:
         void erase(K k) {
-            if (print_enabled) cout << "Deleting " << k << "\n";
+            cout << "Deleting " << k << "\n";
             root = erase(root, k);
             mSize--;
-            if (print_enabled) this->print();
+            this->print();
         }
         void erase(avl_tree_iterator p) {
-            if (print_enabled) cout << "Deleting " << p.node->entry->key << "\n";
+            cout << "Deleting " << p.node->entry->key << "\n";
             if (p == end()) {
                 cout << "No such Node.\n";
                 throw;
             }
             erase(p.node->entry->key);
             mSize--;
-            if (print_enabled) this->print();
+            this->print();
         }
     private:
         avl_tree_node* erase(avl_tree_node* node, K k) {
@@ -333,7 +321,7 @@ template<typename K, typename V> class avl_tree {
                     erase(node->right_child, min_right->entry->key);
                 }
             }
-            if (print_enabled) this->print();
+            this->print();
             if (!node) return NULL;
             node->update_height();
             // ===========================================================
@@ -342,29 +330,27 @@ template<typename K, typename V> class avl_tree {
             int delta_height = height(node->left_child) - height(node->right_child);
             if (delta_height > 1) {
                 if (node->left_child->left_child->height >= node->left_child->right_child->height) {
-                    if (print_enabled) cout << "Rotating right at " << node->entry->key << "\n";
+                    cout << "Rotating right at " << node->entry->key << "\n";
                     return rotate_right(node);
                 } else {
-                    if (print_enabled) cout << "Rotating left at " << node->left_child->entry->key
-                            << "\n";
+                    cout << "Rotating left at " << node->left_child->entry->key << "\n";
                     node->left_child = rotate_left(node->left_child);
-                    if (print_enabled) cout << "Rotating right at " << node->entry->key << "\n";
+                    cout << "Rotating right at " << node->entry->key << "\n";
                     return rotate_right(node);
                 }
             } else if (delta_height < -1) {
                 if (node->right_child->left_child->height
                         <= node->right_child->right_child->height) {
-                    if (print_enabled) cout << "Rotating right at " << node->right_child->entry->key
-                            << "\n";
+                    cout << "Rotating right at " << node->right_child->entry->key << "\n";
                     node->right_child = rotate_right(node->right_child);
-                    if (print_enabled) cout << "Rotating left at " << node->entry->key << "\n";
+                    cout << "Rotating left at " << node->entry->key << "\n";
                     return rotate_left(node);
                 } else {
-                    if (print_enabled) cout << "Rotating left at " << node->entry->key << "\n";
+                    cout << "Rotating left at " << node->entry->key << "\n";
                     return rotate_left(node);
                 }
             } else /*-1<=delta_height<=1*/{
-                if (print_enabled) cout << "No Rotations at " << node->entry->key << "\n";
+                cout << "No Rotations at " << node->entry->key << "\n";
                 return node;
             }
             return node;
