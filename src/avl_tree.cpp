@@ -194,6 +194,7 @@ template<typename K, typename V> class avl_tree {
         // ===========================================================
     private:
         avl_tree_node* rotate_right(avl_tree_node* u) {
+            cout << "Rotating right at " << u->entry->key << "\n";
             avl_tree_node* v = u->left_child;
             avl_tree_node* t2 = v->right_child;
             u->left_child = t2;
@@ -204,6 +205,7 @@ template<typename K, typename V> class avl_tree {
         }
 
         avl_tree_node* rotate_left(avl_tree_node* v) {
+            cout << "Rotating left at " << v->entry->key << "\n";
             avl_tree_node* u = v->right_child;
             avl_tree_node* t2 = u->left_child;
             v->right_child = t2;
@@ -214,7 +216,7 @@ template<typename K, typename V> class avl_tree {
         }
 
         avl_tree_node* insert(avl_tree_node* node, avl_tree_entry* entry) {
-            if (node == NULL) {
+            if (!node) {
                 mSize++;
                 return new avl_tree_node(entry);
             } else {
@@ -237,25 +239,16 @@ template<typename K, typename V> class avl_tree {
                 // ===========================================================
                 int delta_height = height(node->left_child) - height(node->right_child);
                 if (delta_height > 1) {
-                    if (entry->key < node->left_child->entry->key) {
-                        cout << "Rotating right at " << node->entry->key << "\n";
-                        return rotate_right(node);
-                    } else {
-                        cout << "Rotating left at " << node->left_child->entry->key << "\n";
+                    if (entry->key < node->left_child->entry->key) return rotate_right(node);
+                    else {
                         node->left_child = rotate_left(node->left_child);
-                        cout << "Rotating right at " << node->entry->key << "\n";
                         return rotate_right(node);
                     }
                 } else if (delta_height < -1) {
                     if (entry->key < node->right_child->entry->key) {
-                        cout << "Rotating right at " << node->right_child->entry->key << "\n";
                         node->right_child = rotate_right(node->right_child);
-                        cout << "Rotating left at " << node->entry->key << "\n";
                         return rotate_left(node);
-                    } else {
-                        cout << "Rotating left at " << node->entry->key << "\n";
-                        return rotate_left(node);
-                    }
+                    } else return rotate_left(node);
                 } else /*-1<=delta_height<=1*/{
                     cout << "No Rotations at " << node->entry->key << "\n";
                     return node;
@@ -298,6 +291,9 @@ template<typename K, typename V> class avl_tree {
         }
     private:
         avl_tree_node* erase(avl_tree_node* node, K k) {
+            // ===========================================================
+            // Erase
+            // ===========================================================
             if (!node) {
                 cout << "No such Node.\n";
                 throw;
@@ -318,10 +314,9 @@ template<typename K, typename V> class avl_tree {
                     while (min_right->left_child)
                         min_right = min_right->left_child;
                     *(node->entry) = *(min_right->entry);
-                    erase(node->right_child, min_right->entry->key);
+                    node->right_child = erase(node->right_child, min_right->entry->key);
                 }
             }
-            this->print();
             if (!node) return NULL;
             node->update_height();
             // ===========================================================
@@ -353,6 +348,7 @@ template<typename K, typename V> class avl_tree {
                 cout << "No Rotations at " << node->entry->key << "\n";
                 return node;
             }
+            // ===========================================================
             return node;
         }
         // ===========================================================

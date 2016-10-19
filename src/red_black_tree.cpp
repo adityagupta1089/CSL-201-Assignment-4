@@ -2,9 +2,9 @@
 #define SRC_RED_BLACK_TREE_CPP_
 
 #include <iostream>
+#include <vector>
 
 using namespace std;
-
 template<typename K, typename V> class red_black_tree {
 
         // ===========================================================
@@ -43,8 +43,11 @@ template<typename K, typename V> class red_black_tree {
                             + max(left_child ? left_child->height : -1,
                                     right_child ? right_child->height : -1);
                 }
-
         };
+
+        inline bool is_red(rb_tree_node* node) {
+            return node && node->col == red;
+        }
         // ===========================================================
     public:
         class rb_tree_iterator {
@@ -109,13 +112,41 @@ template<typename K, typename V> class red_black_tree {
             cout << "Inserting " << k << "\n";
             rb_tree_entry* entry = new rb_tree_entry(k, v);
             root = insert(root, entry);
+            root->col = black;
             this->print();
+        }
+        // ===========================================================
+        // Miscellaneous Functions
+        // ===========================================================
+    public:
+        int leaves() {
+            return leaves(root);
+        }
+        int height() {
+            return root->height;
+        }
+        vector<int> keys_between(int a, int b) {
+            vector<int> keys;
+            if (root) add_keys(root, a, b, keys);
+            return keys;
+        }
+    private:
+        int leaves(rb_tree_node* node) {
+            if (!node) return 0;
+            if (!node->left_child && !node->right_child) return 1;
+            else return leaves(node->left_child) + leaves(node->right_child);
+        }
+        void add_keys(rb_tree_node* node, int a, int b, vector<int>& vec) {
+            if (node->left_child) add_keys(node->left_child, a, b, vec);
+            if (a <= node->entry->key && node->entry->key <= b) vec.push_back(node->entry->key);
+            if (node->right_child) add_keys(node->right_child, a, b, vec);
         }
         // ===========================================================
         // Put/Insert Internal Functions
         // ===========================================================
     private:
         rb_tree_node* rotate_right(rb_tree_node* u) {
+            cout << "Rotating right at " << u->entry->key << "\n";
             rb_tree_node* v = u->left_child;
             rb_tree_node* t2 = v->right_child;
             u->left_child = t2;
@@ -126,6 +157,7 @@ template<typename K, typename V> class red_black_tree {
         }
 
         rb_tree_node* rotate_left(rb_tree_node* v) {
+            cout << "Rotating left at " << v->entry->key << "\n";
             rb_tree_node* u = v->right_child;
             rb_tree_node* t2 = u->left_child;
             v->right_child = t2;
@@ -135,22 +167,24 @@ template<typename K, typename V> class red_black_tree {
             return u;
         }
 
-        void tree_balance(rb_tree_node& node) {
-            //TODO
-        }
-
         rb_tree_node* insert(rb_tree_node* node, rb_tree_entry* entry) {
-            if (node == NULL) {
-                return new rb_tree_node(entry, (mSize++ == 0) ? black : red);
+            if (!node) {
+                mSize++;
+                return new rb_tree_node(entry, red);
             } else {
                 // ===========================================================
                 // Insertion
                 // ===========================================================
-                if (entry->key < node->entry->key) node->left_child = insert(node->left_child,
-                        entry);
-                else if (entry->key > node->entry->key) node->right_child = insert(
-                        node->right_child, entry);
-                else /*entry->key == node->entry->key*/node->entry->val = entry->val;
+                rb_tree_node* child;
+                bool is_left_child = false;
+                if (entry->key < node->entry->key) {
+                    is_left_child = true;
+                    child = insert(node->left_child, entry);
+                    node->left_child = child;
+                } else if (entry->key > node->entry->key) {
+                    child = insert(node->right_child, entry);
+                    node->right_child = child;
+                } else /*entry->key == node->entry->key*/node->entry->val = entry->val;
                 node->update_height();
                 this->print();
                 if (entry->key == node->entry->key) {
@@ -160,14 +194,39 @@ template<typename K, typename V> class red_black_tree {
                 // ===========================================================
                 // Balancing
                 // ===========================================================
-                tree_balance(*node);
+                if (is_red(child)) {
+                    if ((is_left_child && !is_red(node->right_child))
+                            || (!is_left_child && !is_red(node->left_child))) {
+                        if (is_red(child->left_child) || is_red(child->right_child)) {
+                            node->col = red;
+                            if (is_red(child->left_child)) {
+                                if (!is_left_child) {
+                                    node->right_child = rotate_right(node->right_child);
+                                    node = rotate_left(node);
+                                } else node = rotate_right(node);
+                            } else {
+                                if (is_left_child) {
+                                    node->left_child = rotate_left(node->left_child);
+                                    node = rotate_right(node);
+                                } else node = rotate_left(node);
+                            }
+                            node->col = black;
+                        } else cout << "No Balancing at " << node->entry->key << "\n";
+                    } else {
+                        cout << "Changing Colours\n";
+                        node->col = red;
+                        node->left_child->col = black;
+                        node->right_child->col = black;
+                    }
+                } else cout << "No Balancing at " << node->entry->key << "\n";
                 return node;
+                // ===========================================================
             }
         }
 
-// ===========================================================
-// Find
-// ===========================================================
+        // ===========================================================
+        // Find
+        // ===========================================================
     public:
         rb_tree_iterator search(K k) {
             rb_tree_node* node = root;
@@ -179,18 +238,57 @@ template<typename K, typename V> class red_black_tree {
             } while (node);
             return end();
         }
-// ===========================================================
-// Remove
-// ===========================================================
+        // ===========================================================
+        // Remove
+        // ===========================================================
     public:
+        void remove(K k) {
+            cout << "Deleting " << k << "\n";
+            root = remove(root, k);
+            mSize--;
+            this->print();
+        }
+
     private:
         rb_tree_node* remove(rb_tree_node* node, K k) {
-//TODO remove
+            // ===========================================================
+            // Erase
+            // ===========================================================
+            if (!node) {
+                cout << "No such Node.\n";
+                throw;
+            } else if (k < node->entry->key) node->left_child = remove(node->left_child, k);
+            else if (k > node->entry->key) node->right_child = remove(node->right_child, k);
+            else /* k==node->entry->key */{
+                if (!node->left_child && !node->right_child) {
+                    rb_tree_node* node2 = node;
+                    node = NULL;
+                    delete node2;
+                } else if (!node->left_child || !node->right_child) {
+                    rb_tree_node* node2 = node;
+                    rb_tree_node* child = node->left_child ? node->left_child : node->right_child;
+                    *node = *child;
+                    delete child;
+                } else {
+                    rb_tree_node* min_right = node->right_child;
+                    while (min_right->left_child)
+                        min_right = min_right->left_child;
+                    *(node->entry) = *(min_right->entry);
+                    node->right_child = remove(node->right_child, min_right->entry->key);
+                }
+            }
+            if (!node) return NULL;
+            node->update_height();
+            // ===========================================================
+            // Balancing
+            // ===========================================================
+            //TODO Balancing
+            // ===========================================================
             return node;
         }
-// ===========================================================
-// Printing
-// ===========================================================
+        // ===========================================================
+        // Printing
+        // ===========================================================
     private:
         void print(string prefix, rb_tree_node* node, bool left, bool root) {
             if (node->right_child) print(prefix + (!left || root ? "    " : "│   "),
