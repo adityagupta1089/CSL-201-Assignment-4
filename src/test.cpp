@@ -52,20 +52,19 @@ void rb_test() {
         cout << "Could not open file 'input.txt'.\n";
         return;
     }
-    /*cout << "Total Leaves = " << tree.leaves() << "\n";
-     cout << "Tree height = " << tree.height() << "\n";
-     int a = 1000;
-     int b = 2000;
-     cout << "Keys between " << a << " and " << b << " are : ";
-     vector<int> keys = tree.keys_between(a, b);
-     for (int i = 0; i < keys.size(); i++)
-     cout << keys[i] << ((i != keys.size() - 1) ? ", " : "");
-     cout << "\n";
-     cout << string(100, '=') << "\n";*/
-    tree.remove(4141);
+    cout << "Total Leaves = " << tree.leaves() << "\n";
+    cout << "Tree height = " << tree.height() << "\n";
+    int a = 1000;
+    int b = 2000;
+    cout << "Keys between " << a << " and " << b << " are : ";
+    vector<int> keys = tree.keys_between(a, b);
+    for (int i = 0; i < keys.size(); i++)
+        cout << keys[i] << ((i != keys.size() - 1) ? ", " : "");
+    cout << "\n";
+    cout << string(100, '=') << "\n";
 }
 int main() {
     //avl_test();
-    rb_test();
+    //rb_test();
     return 0;
 }

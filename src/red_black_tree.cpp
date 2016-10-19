@@ -301,7 +301,8 @@ template<typename K, typename V> class red_black_tree {
     public:
         void print() {
             cout << string(100, '=') << "\n";
-            print("", root, true, true);
+            if (root) print("", root, true, true);
+            else cout << "Empty Tree\n";
             cout << string(100, '=') << "\n";
         }
 }

@@ -366,7 +366,8 @@ template<typename K, typename V> class avl_tree {
     public:
         void print() {
             cout << string(100, '=') << "\n";
-            print("", root, true, true);
+            if (root) print("", root, true, true);
+            else cout << "Empty Tree\n";
             cout << string(100, '=') << "\n";
         }
 }
