@@ -229,7 +229,7 @@ template<typename K, typename V> class avl_tree {
                         node->right_child, entry);
                 else /*entry->key == node->entry->key*/node->entry->val = entry->val;
                 node->update_height();
-                this->print();
+                //this->print();
                 if (entry->key == node->entry->key) {
                     cout << "Updated\n";
                     return node;
@@ -324,7 +324,7 @@ template<typename K, typename V> class avl_tree {
             // ===========================================================
             int delta_height = height(node->left_child) - height(node->right_child);
             if (delta_height > 1) {
-                if (node->left_child->left_child->height >= node->left_child->right_child->height) {
+                if (height(node->left_child->left_child) >= height(node->left_child->right_child)) {
                     cout << "Rotating right at " << node->entry->key << "\n";
                     return rotate_right(node);
                 } else {
@@ -334,8 +334,8 @@ template<typename K, typename V> class avl_tree {
                     return rotate_right(node);
                 }
             } else if (delta_height < -1) {
-                if (node->right_child->left_child->height
-                        <= node->right_child->right_child->height) {
+                if (height(node->right_child->left_child)
+                        >= height(node->right_child->right_child)) {
                     cout << "Rotating right at " << node->right_child->entry->key << "\n";
                     node->right_child = rotate_right(node->right_child);
                     cout << "Rotating left at " << node->entry->key << "\n";

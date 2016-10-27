@@ -1,4 +1,4 @@
 all:
-	g++ -g ./src/avl_tree.cpp ./src/red_black_tree.cpp ./src/test.cpp -o ./bin/avl_test
+	g++ -g ./src/red_black_tree.cpp ./src/test.cpp -o ./bin/rbtree -fsanitize=undefined
 clean:
 	rm -rf ./bin/avl_test
