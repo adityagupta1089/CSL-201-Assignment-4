@@ -2,9 +2,10 @@
 #define SRC_RED_BLACK_TREE_CPP_
 
 #include <iostream>
-#include <vector>
+#include <vector>       //for returning set of keys between two given keys
 
 using namespace std;
+
 template<typename K, typename V> class red_black_tree {
 
         // ===========================================================
@@ -33,20 +34,14 @@ template<typename K, typename V> class red_black_tree {
                 int height;
                 int black_height;
                 rb_tree_node(rb_tree_entry* pEntry, Color pColor)
-                        : entry(pEntry), left_child(NULL), right_child(NULL), height(0), col(
-                                pColor), black_height(pColor == black ? 0 : -1) {
+                        : entry(pEntry), left_child(NULL), right_child(NULL), height(0), col(pColor), black_height(pColor == black ? 0 : -1) {
                 }
                 rb_tree_node()
-                        : entry(NULL), left_child(NULL), right_child(NULL), height(0), col(black), black_height(
-                                0) {
+                        : entry(NULL), left_child(NULL), right_child(NULL), height(0), col(black), black_height(0) {
                 }
                 inline void update_height() {
-                    this->height = 1
-                            + max(left_child ? left_child->height : -1,
-                                    right_child ? right_child->height : -1);
-                    this->black_height = (this->col == black ? 1 : 0)
-                            + max(left_child ? left_child->black_height : -1,
-                                    right_child ? right_child->black_height : -1);
+                    this->height = 1 + max(left_child ? left_child->height : -1, right_child ? right_child->height : -1);
+                    this->black_height = (this->col == black ? 1 : 0) + max(left_child ? left_child->black_height : -1, right_child ? right_child->black_height : -1);
                 }
         };
         inline static int black_height(rb_tree_node* node) {
@@ -94,7 +89,7 @@ template<typename K, typename V> class red_black_tree {
             end_iterator = new rb_tree_iterator(end_node);
         }
 
-        virtual ~red_black_tree() {
+        ~red_black_tree() {
             delete_node(root);
         }
     private:
@@ -206,8 +201,7 @@ template<typename K, typename V> class red_black_tree {
                 // ===========================================================
                 if (is_red(child)) {
                     if (is_red(child->left_child) || is_red(child->right_child)) {
-                        if ((is_left_child && !is_red(node->right_child))
-                                || (!is_left_child && !is_red(node->left_child))) {
+                        if ((is_left_child && !is_red(node->right_child)) || (!is_left_child && !is_red(node->left_child))) {
                             node->col = red;
                             if (is_red(child->left_child)) {
                                 if (!is_left_child) {
@@ -308,8 +302,7 @@ template<typename K, typename V> class red_black_tree {
             // ===========================================================
             // Balancing
             // ===========================================================
-            int black_height_after = black_height(
-                    removed_from_left ? node->left_child : node->right_child);
+            int black_height_after = black_height(removed_from_left ? node->left_child : node->right_child);
             if (black_height_after < black_height_before) {
                 cout << "Balancing at " << node->entry->key << "\n";
                 rb_tree_node* b = removed_from_left ? node->right_child : node->left_child;
@@ -319,12 +312,10 @@ template<typename K, typename V> class red_black_tree {
                         cout << "Case 1.1\n";
                         rb_tree_node* c = is_red(b->left_child) ? b->left_child : b->right_child;
                         if (!removed_from_left) {
-                            if (c == b->right_child) node->left_child = rotate_left(
-                                    node->left_child);
+                            if (c == b->right_child) node->left_child = rotate_left(node->left_child);
                             node = rotate_right(node);
                         } else {
-                            if (c == b->left_child) node->right_child = rotate_right(
-                                    node->right_child);
+                            if (c == b->left_child) node->right_child = rotate_right(node->right_child);
                             node = rotate_left(node);
                         }
                         node->col = red;
@@ -347,13 +338,9 @@ template<typename K, typename V> class red_black_tree {
                         if (is_red(c->left_child) || is_red(c->right_child)) {
                             //Case 2.1.1
                             cout << "Case 2.1.1\n";
-                            rb_tree_node* d =
-                                    (removed_from_left ?
-                                            (is_red(c->right_child) ? c->right_child : c->left_child) :
-                                            (is_red(c->left_child) ? c->left_child : c->right_child));
+                            rb_tree_node* d = (removed_from_left ? (is_red(c->right_child) ? c->right_child : c->left_child) : (is_red(c->left_child) ? c->left_child : c->right_child));
                             if (!removed_from_left) {
-                                if (d == c->left_child) node->left_child->right_child =
-                                        rotate_right(node->left_child->right_child);
+                                if (d == c->left_child) node->left_child->right_child = rotate_right(node->left_child->right_child);
                                 node->left_child = rotate_left(node->left_child);
                                 node->left_child = rotate_left(node->left_child);
                                 node = rotate_right(node);
@@ -362,8 +349,7 @@ template<typename K, typename V> class red_black_tree {
                                 node->left_child->right_child->update_height();
                                 node->left_child->update_height();
                             } else {
-                                if (d == c->right_child) node->right_child->left_child =
-                                        rotate_left(node->right_child->left_child);
+                                if (d == c->right_child) node->right_child->left_child = rotate_left(node->right_child->left_child);
                                 node->right_child = rotate_right(node->right_child);
                                 node->right_child = rotate_right(node->right_child);
                                 node = rotate_left(node);
@@ -388,17 +374,12 @@ template<typename K, typename V> class red_black_tree {
                         if (is_red(b->left_child) || is_red(b->right_child)) {
                             //Case 2.2.1
                             cout << "Case 2.2.1\n";
-                            rb_tree_node* c =
-                                    removed_from_left ?
-                                            (is_red(b->right_child) ? b->right_child : b->left_child) :
-                                            (is_red(b->left_child) ? b->left_child : b->right_child);
+                            rb_tree_node* c = removed_from_left ? (is_red(b->right_child) ? b->right_child : b->left_child) : (is_red(b->left_child) ? b->left_child : b->right_child);
                             if (!removed_from_left) {
-                                if (c == b->right_child) node->left_child = rotate_left(
-                                        node->left_child);
+                                if (c == b->right_child) node->left_child = rotate_left(node->left_child);
                                 node = rotate_right(node);
                             } else {
-                                if (c == b->left_child) node->right_child = rotate_right(
-                                        node->right_child);
+                                if (c == b->left_child) node->right_child = rotate_right(node->right_child);
                                 node = rotate_left(node);
                             }
                             node->col = black;
@@ -424,13 +405,9 @@ template<typename K, typename V> class red_black_tree {
 // ===========================================================
     private:
         void print(string prefix, rb_tree_node* node, bool left, bool root) {
-            if (node->right_child) print(prefix + (!left || root ? "    " : "│   "),
-                    node->right_child, false, false);
-            cout << prefix << (root ? "X─── " : (left ? "└── " : "┌── ")) << "[" << node->entry->key
-                    << (node->col == red ? "(R)" : "(B),") << node->height << ","
-                    << node->black_height << "]\n";
-            if (node->left_child) print(prefix + (left ? "    " : "│   "), node->left_child, true,
-                    false);
+            if (node->right_child) print(prefix + (!left || root ? "    " : "│   "), node->right_child, false, false);
+            cout << prefix << (root ? "X─── " : (left ? "└── " : "┌── ")) << "[" << node->entry->key << (node->col == red ? "(R)" : "(B),") << node->height << "," << node->black_height << "]\n";
+            if (node->left_child) print(prefix + (left ? "    " : "│   "), node->left_child, true, false);
         }
     public:
         void print() {

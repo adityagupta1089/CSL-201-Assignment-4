@@ -32,9 +32,7 @@ template<typename K, typename V> class avl_tree {
                         : entry(NULL), left_child(NULL), right_child(NULL), height(0) {
                 }
                 inline void update_height() {
-                    this->height = 1
-                            + max(left_child ? left_child->height : -1,
-                                    right_child ? right_child->height : -1);
+                    this->height = 1 + max(left_child ? left_child->height : -1, right_child ? right_child->height : -1);
                 }
         };
         inline static int height(avl_tree_node* node) {
@@ -78,7 +76,7 @@ template<typename K, typename V> class avl_tree {
             end_node = new avl_tree_node();
             end_iterator = new avl_tree_iterator(end_node);
         }
-        virtual ~avl_tree() {
+        ~avl_tree() {
             delete_node(root);
         }
     private:
@@ -138,8 +136,7 @@ template<typename K, typename V> class avl_tree {
             else if (k == node->entry->key) return avl_tree_iterator(node);
             else {
                 avl_tree_iterator ceil_left = ceilingEntry(node->left_child, k);
-                return (ceil_left == end() || (*ceil_left).key < k) ?
-                        avl_tree_iterator(node) : ceil_left;
+                return (ceil_left == end() || (*ceil_left).key < k) ? avl_tree_iterator(node) : ceil_left;
             }
         }
         avl_tree_iterator floorEntry(avl_tree_node* node, K k) {
@@ -148,8 +145,7 @@ template<typename K, typename V> class avl_tree {
             else if (k == node->entry->key) return avl_tree_iterator(node);
             else {
                 avl_tree_iterator floor_right = floorEntry(node->right_child, k);
-                return (floor_right == end() || (*floor_right).key > k) ?
-                        avl_tree_iterator(node) : floor_right;
+                return (floor_right == end() || (*floor_right).key > k) ? avl_tree_iterator(node) : floor_right;
             }
         }
         avl_tree_iterator lowerEntry(avl_tree_node* node, K k) {
@@ -223,10 +219,8 @@ template<typename K, typename V> class avl_tree {
                 // ===========================================================
                 // Insertion
                 // ===========================================================
-                if (entry->key < node->entry->key) node->left_child = insert(node->left_child,
-                        entry);
-                else if (entry->key > node->entry->key) node->right_child = insert(
-                        node->right_child, entry);
+                if (entry->key < node->entry->key) node->left_child = insert(node->left_child, entry);
+                else if (entry->key > node->entry->key) node->right_child = insert(node->right_child, entry);
                 else /*entry->key == node->entry->key*/node->entry->val = entry->val;
                 node->update_height();
                 //this->print();
@@ -334,8 +328,7 @@ template<typename K, typename V> class avl_tree {
                     return rotate_right(node);
                 }
             } else if (delta_height < -1) {
-                if (height(node->right_child->left_child)
-                        >= height(node->right_child->right_child)) {
+                if (height(node->right_child->left_child) >= height(node->right_child->right_child)) {
                     cout << "Rotating right at " << node->right_child->entry->key << "\n";
                     node->right_child = rotate_right(node->right_child);
                     cout << "Rotating left at " << node->entry->key << "\n";
@@ -356,12 +349,9 @@ template<typename K, typename V> class avl_tree {
         // ===========================================================
     private:
         void print(string prefix, avl_tree_node* node, bool left, bool root) {
-            if (node->right_child) print(prefix + (!left || root ? "    " : "│   "),
-                    node->right_child, false, false);
-            cout << prefix << (root ? "X─── " : (left ? "└── " : "┌── ")) << "[" << node->entry->key
-                    << "]\n";
-            if (node->left_child) print(prefix + (left ? "    " : "│   "), node->left_child, true,
-                    false);
+            if (node->right_child) print(prefix + (!left || root ? "    " : "│   "), node->right_child, false, false);
+            cout << prefix << (root ? "X─── " : (left ? "└── " : "┌── ")) << "[" << node->entry->key << "]\n";
+            if (node->left_child) print(prefix + (left ? "    " : "│   "), node->left_child, true, false);
         }
     public:
         void print() {
