@@ -87,7 +87,7 @@ void rb_test() {
         } else if (x == 9) {
             srand(time(NULL));
             int n;
-            cout << "Enter count of keys to remove:\n";
+            cout << "Enter max count of keys to remove:\n";
             cin >> n;
             if (n >= tree.size()) {
                 cout << "Too many!\n";
@@ -95,9 +95,12 @@ void rb_test() {
             }
             for (int i = 0; i < n; i++) {
                 int index = rand() % keys_contained.size();
-                tree.remove(keys_contained[index]);
-                keys_contained.erase(keys_contained.begin() + index);
+                if (tree.search(keys_contained[index]) != tree.end()) {
+                    tree.remove(keys_contained[index]);
+                    keys_contained.erase(keys_contained.begin() + index);
+                }
             }
+            tree.print();
         }
     }
     //==========================================================================

@@ -48,7 +48,7 @@ void avl_test() {
         cout << "Enter Choice:\n";
         cout << " 1.First Entry       2.Last Entry      3.Ceiling Entry      4.Floor Entry      5.Lower Entry\n";
         cout << " 6.Higher Entry      7.Size            8.Empty              9.Find            10.Put\n";
-        cout << "11.Erase            12.Exit           13.Pair with sum      [Erase(rb_tree_iterator*) not testable in this UI]\n";
+        cout << "11.Erase            12.Pair with sum  13.Exit      [Erase(rb_tree_iterator*) not testable in this UI]\n";
         cout << string(100, '=') << "\n";
         cout << "Advanced Options:\n";
         cout << "14.Batch 'put'      15.Batch 'erase'\n";
@@ -112,8 +112,8 @@ void avl_test() {
                 continue;
             }
             tree.print();
-        } else if (x == 12) break;
-        else if (x == 13) {
+        } else if (x == 13) break;
+        else if (x == 12) {
             int sum;
             cout << "Entry sum:\n";
             cin >> sum;
@@ -139,9 +139,12 @@ void avl_test() {
             }
             for (int i = 0; i < n; i++) {
                 int index = rand() % keys_contained.size();
-                tree.erase(keys_contained[index]);
-                keys_contained.erase(keys_contained.begin() + index);
+                if (tree.find(keys_contained[index]) != tree.end()) {
+                    tree.erase(keys_contained[index]);
+                    keys_contained.erase(keys_contained.begin() + index);
+                }
             }
+            tree.print();
         }
     }
 //==========================================================================
