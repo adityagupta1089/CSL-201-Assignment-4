@@ -41,15 +41,17 @@ void avl_test() {
 
     //==========================================================================
     vector<int> keys_contained;
+    cout << string(100, '=') << "\n";
+    cout << "AVL TREE<INT,INT> TESTING UI\n";
     while (true) {
         cout << string(100, '=') << "\n";
         cout << "Enter Choice:\n";
         cout << " 1.First Entry       2.Last Entry      3.Ceiling Entry      4.Floor Entry      5.Lower Entry\n";
         cout << " 6.Higher Entry      7.Size            8.Empty              9.Find            10.Put\n";
-        cout << "11.Erase            12.Exit           [Erase(rb_tree_iterator*) not testable in this UI]\n";
+        cout << "11.Erase            12.Exit           13.Pair with sum      [Erase(rb_tree_iterator*) not testable in this UI]\n";
         cout << string(100, '=') << "\n";
         cout << "Advanced Options:\n";
-        cout << "13.Batch 'put'      14.Batch 'erase'\n";
+        cout << "14.Batch 'put'      15.Batch 'erase'\n";
         cout << string(100, '=') << "\n";
         int x;
         cin >> x;
@@ -112,6 +114,11 @@ void avl_test() {
             tree.print();
         } else if (x == 12) break;
         else if (x == 13) {
+            int sum;
+            cout << "Entry sum:\n";
+            cin >> sum;
+            cout << ((is_pair_with_sum(tree, sum)) ? "Yes\n" : "No\n");
+        } else if (x == 14) {
             srand(time(NULL));
             int n;
             cout << "Enter count of entries to add:\n";
@@ -121,7 +128,7 @@ void avl_test() {
                 keys_contained.push_back(k);
                 tree.put(k, v);
             }
-        } else if (x == 14) {
+        } else if (x == 15) {
             srand(time(NULL));
             int n;
             cout << "Enter count of keys to remove:\n";

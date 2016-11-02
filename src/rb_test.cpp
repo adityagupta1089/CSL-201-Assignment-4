@@ -23,6 +23,8 @@ void rb_test() {
     }
     //==========================================================================
     vector<int> keys_contained;
+    cout << string(100, '=') << "\n";
+    cout << "RED BLACK TREE<INT,INT> TESTING UI\n";
     while (true) {
         cout << string(100, '=') << "\n";
         cout << "Enter Choice:\n";
