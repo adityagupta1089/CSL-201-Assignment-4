@@ -68,6 +68,10 @@ template<typename K, typename V> class red_black_tree {
                 bool operator !=(const rb_tree_iterator& p) const {
                     return node != p.node;
                 }
+                friend ostream& operator<<(ostream& output, const rb_tree_iterator& it) {
+                    output << "(key=" << it.node->entry->key << ", value=" << it.node->entry->val << ")";
+                    return output;
+                }
                 friend class red_black_tree;
         };
         // ===========================================================
@@ -132,6 +136,9 @@ template<typename K, typename V> class red_black_tree {
             vector<int> keys;
             if (root) add_keys(root, a, b, keys);
             return keys;
+        }
+        unsigned size() {
+            return mSize;
         }
     private:
         int leaves(rb_tree_node* node) {

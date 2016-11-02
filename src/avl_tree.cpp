@@ -56,6 +56,10 @@ template<typename K, typename V> class avl_tree {
                 bool operator !=(const avl_tree_iterator& p) const {
                     return node != p.node;
                 }
+                friend ostream& operator<<(ostream& output, const avl_tree_iterator& it) {
+                    output << "(key=" << it.node->entry->key << ", value=" << it.node->entry->val << ")";
+                    return output;
+                }
                 friend class avl_tree;
         };
         // ===========================================================
