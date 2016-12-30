@@ -1,14 +1,21 @@
-1.To Build:   
-	$make
-2.To Run:
-    AVL Tree:   
-    	$./bin/avl_test
-    R/B Tree:   
-    	$./bin/rb_test
-3.Use different options available in UI that is based on `tree<K=int,V=int>`.
+# Instructions:
+1. To Build:   
+```
+$make
+```
+2. To Run:
+    * AVL Tree:  
+```
+$./bin/avl_test
+```
+    * R/B Tree:   
+```
+$./bin/rb_test
+```
+3. Use different options available in UI that is based on `tree<K=int,V=int>`.
 
 NOTE: In printing of Red-Black tree, a node like `[-10(R)0,-1]` means
-      a red [(R)] node with key -10 and total and black heights as 0 and -1 
+      a red [`(R)`] node with key `-10` and total and black heights as `0` and `-1` 
       respectively.
       
 # Questions:
